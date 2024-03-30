@@ -5,10 +5,11 @@ import "izitoast/dist/css/iziToast.min.css";
 
 const startButton = document.querySelector('button');
 let userSelectedDate;
+let dateTimePicker;
 
 disableStartButton();
 
-flatpickr('#datetime-picker', {
+dateTimePicker = flatpickr('#datetime-picker', {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
@@ -59,6 +60,7 @@ function startCountdown() {
       updateDisplay(remainingTime);
     }
   }, 1000);
+  dateTimePicker.destroy();
 }
 
 function updateDisplay(remainingTime) {
@@ -84,5 +86,3 @@ function convertMs(ms) {
 
   return { days, hours, minutes, seconds };
 }
-
-
