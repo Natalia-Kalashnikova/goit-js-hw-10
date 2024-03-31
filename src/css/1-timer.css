@@ -72,11 +72,6 @@ input {
   margin-top: 20px;
 }
 
-input:hover,
-input:focus {
-  border-color: #000;
-}
-
 button {
   background-color: #4e75ff;
   color: #fff;

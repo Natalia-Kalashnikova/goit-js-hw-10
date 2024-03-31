@@ -4,66 +4,50 @@ import iziToast from "izitoast";
 import "izitoast/dist/css/iziToast.min.css";
 
 const startButton = document.querySelector('button');
+const input = document.querySelector('#datetime-picker');
+
 let userSelectedDate;
-let dateTimePicker;
 
-disableStartButton();
-
-dateTimePicker = flatpickr('#datetime-picker', {
+flatpickr('#datetime-picker', {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
-  onClose(selectedDates) {
+  onClose: function (selectedDates) {
     userSelectedDate = selectedDates[0];
-    updateUserInterface();
+    const currentDate = new Date();
+    if (userSelectedDate > currentDate) {
+      startButton.disabled = false;
+    } else {
+      startButton.disabled = true;
+      iziToast.show({
+        title: 'Error',
+        message: 'Please choose a date in the future!',
+        position: 'topRight',
+        backgroundColor: '#ef4040',
+        messageColor: '#fff',
+        titleColor: '#fff',
+      });
+    }
   },
 });
 
-function updateUserInterface() {
-  if (!userSelectedDate || userSelectedDate < new Date()) {
-    iziToast.error({
-      position: 'topRight',
-      backgroundColor: '#EF4040',
-      message: 'Please choose a date in the future!',
-    });
-    disableStartButton();
-  } else {
-    enableStartButton();
+startButton.addEventListener('click', () => {
+  if (startButton.disabled === false) {
+    setInterval(updateDisplay, 1000);
+    startButton.disabled = true;
+    input.disabled = true;
   }
-}
+});
 
-function disableStartButton() {
-  startButton.disabled = true;
-}
+function updateDisplay() {
+  const currentDate = new Date();
+  const remainingTime = userSelectedDate - currentDate;
 
-function enableStartButton() {
-  startButton.disabled = false;
-  startButton.addEventListener('click', startCountdown);
-}
-
-function startCountdown() {
-  disableStartButton();
-
-  const currentTime = new Date().getTime();
-  const remainingTime = userSelectedDate.getTime() - currentTime;
-
-  let countDownTimer = setInterval(() => {
-    const now = new Date().getTime();
-    const remainingTime = userSelectedDate.getTime() - now;
-
-    if (remainingTime <= 0) {
-      clearInterval(countDownTimer);
-      updateDisplay(0);
-      enableStartButton();
-    } else {
-      updateDisplay(remainingTime);
-    }
-  }, 1000);
-  dateTimePicker.destroy();
-}
-
-function updateDisplay(remainingTime) {
+  if (remainingTime <= 0) {
+    clearInterval(updateCounter);
+    return;
+  }
   const { days, hours, minutes, seconds } = convertMs(remainingTime);
   const addTimerValue = (value) => String(value).padStart(2, '0');
 
@@ -73,16 +57,16 @@ function updateDisplay(remainingTime) {
   document.querySelector('[data-seconds]').textContent = addTimerValue(seconds);
 }
 
-function convertMs(ms) {
+function convertMs(remainingTime) {
   const second = 1000;
   const minute = second * 60;
   const hour = minute * 60;
   const day = hour * 24;
 
-  const days = Math.floor(ms / day);
-  const hours = Math.floor((ms % day) / hour);
-  const minutes = Math.floor(((ms % day) % hour) / minute);
-  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+  const days = Math.floor(remainingTime / day);
+  const hours = Math.floor((remainingTime % day) / hour);
+  const minutes = Math.floor(((remainingTime % day) % hour) / minute);
+  const seconds = Math.floor((((remainingTime % day) % hour) % minute) / second);
 
   return { days, hours, minutes, seconds };
 }
