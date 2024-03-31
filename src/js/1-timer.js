@@ -8,6 +8,8 @@ const input = document.querySelector('#datetime-picker');
 
 let userSelectedDate;
 
+startButton.disabled = true;
+
 flatpickr('#datetime-picker', {
   enableTime: true,
   time_24hr: true,
@@ -33,19 +35,10 @@ flatpickr('#datetime-picker', {
 });
 
 startButton.addEventListener('click', () => {
-  if (startButton.disabled === false && userSelectedDate) {
+  if (startButton.disabled === false) {
     setInterval(updateDisplay, 1000);
     startButton.disabled = true;
     input.disabled = true;
-  } else {
-    iziToast.show({
-      title: 'Error',
-      message: 'Please choose a date first!',
-      position: 'topRight',
-      backgroundColor: '#ef4040',
-      messageColor: '#fff',
-      titleColor: '#fff',
-    });
   }
 });
 
