@@ -33,10 +33,19 @@ flatpickr('#datetime-picker', {
 });
 
 startButton.addEventListener('click', () => {
-  if (startButton.disabled === false) {
+  if (startButton.disabled === false && userSelectedDate) {
     setInterval(updateDisplay, 1000);
     startButton.disabled = true;
     input.disabled = true;
+  } else {
+    iziToast.show({
+      title: 'Error',
+      message: 'Please choose a date first!',
+      position: 'topRight',
+      backgroundColor: '#ef4040',
+      messageColor: '#fff',
+      titleColor: '#fff',
+    });
   }
 });
 
